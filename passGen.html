@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrustyLads Password Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+        <h1 class="text-2xl font-bold text-center mb-4">TrustyLads Password Generator</h1>
+        
+        <div class="mb-4">
+            <label for="length" class="block text-sm font-medium text-gray-700">Password Length: <span id="lengthValue">12</span></label>
+            <input type="range" id="length" min="4" max="50" value="12" class="w-full mt-2">
+        </div>
+
+        <div class="mb-4 space-y-2">
+            <div>
+                <input type="checkbox" id="uppercase" checked class="mr-2">
+                <label for="uppercase" class="text-sm text-gray-700">Include Uppercase Letters</label>
+            </div>
+            <div>
+                <input type="checkbox" id="lowercase" checked class="mr-2">
+                <label for="lowercase" class="text-sm text-gray-700">Include Lowercase Letters</label>
+            </div>
+            <div>
+                <input type="checkbox" id="numbers" checked class="mr-2">
+                <label for="numbers" class="text-sm text-gray-700">Include Numbers</label>
+            </div>
+            <div>
+                <input type="checkbox" id="symbols" checked class="mr-2">
+                <label for="symbols" class="text-sm text-gray-700">Include Symbols</label>
+            </div>
+        </div>
+
+        <button id="generate" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition">Generate Password</button>
+
+        <div class="mt-4">
+            <input type="text" id="password" readonly class="w-full p-2 border rounded text-center" placeholder="Your password will appear here">
+            <button id="copy" class="mt-2 w-full bg-gray-200 text-gray-700 py-2 rounded hover:bg-gray-300 transition">Copy to Clipboard</button>
+        </div>
+    </div>
+
+    <script>
+        const lengthSlider = document.getElementById('length');
+        const lengthValue = document.getElementById('lengthValue');
+        const uppercaseCheckbox = document.getElementById('uppercase');
+        const lowercaseCheckbox = document.getElementById('lowercase');
+        const numbersCheckbox = document.getElementById('numbers');
+        const symbolsCheckbox = document.getElementById('symbols');
+        const generateButton = document.getElementById('generate');
+        const passwordField = document.getElementById('password');
+        const copyButton = document.getElementById('copy');
+
+        lengthSlider.addEventListener('input', () => {
+            lengthValue.textContent = lengthSlider.value;
+        });
+
+        generateButton.addEventListener('click', () => {
+            const length = parseInt(lengthSlider.value);
+            const includeUppercase = uppercaseCheckbox.checked;
+            const includeLowercase = lowercaseCheckbox.checked;
+            const includeNumbers = numbersCheckbox.checked;
+            const includeSymbols = symbolsCheckbox.checked;
+
+            const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+            const numbers = '0123456789';
+            const symbols = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+
+            let characters = '';
+            let password = '';
+
+            if (includeUppercase) characters += uppercase;
+            if (includeLowercase) characters += lowercase;
+            if (includeNumbers) characters += numbers;
+            if (includeSymbols) characters += symbols;
+
+            if (characters === '') {
+                alert('Please select at least one character type.');
+                return;
+            }
+
+            // Ensure at least one character from each selected type
+            if (includeUppercase) password += uppercase[Math.floor(Math.random() * uppercase.length)];
+            if (includeLowercase) password += lowercase[Math.floor(Math.random() * lowercase.length)];
+            if (includeNumbers) password += numbers[Math.floor(Math.random() * numbers.length)];
+            if (includeSymbols) password += symbols[Math.floor(Math.random() * symbols.length)];
+
+            // Fill remaining length
+            for (let i = password.length; i < length; i++) {
+                const randomIndex = Math.floor(Math.random() * characters.length);
+                password += characters[randomIndex];
+            }
+
+            // Shuffle password
+            password = password.split('').sort(() => Math.random() - 0.5).join('');
+            passwordField.value = password;
+        });
+
+        copyButton.addEventListener('click', () => {
+            if (passwordField.value) {
+                navigator.clipboard.writeText(passwordField.value).then(() => {
+                    alert('Password copied to clipboard!');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
